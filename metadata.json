@@ -1,0 +1,5 @@
+{
+  "name": "Bank Balance Tracker PWA",
+  "description": "A minimalist personal finance tracker for monthly bank account balances, optimized for iPhone PWA.",
+  "requestFramePermissions": []
+}
