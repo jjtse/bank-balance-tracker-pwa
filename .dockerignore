@@ -1,0 +1,20 @@
+# Dependencies
+node_modules
+
+# Next.js build output
+.next
+
+# Development environment variables
+.env.local
+
+# Production environment variables (we will inject these securely)
+!.env.production
+
+# Git
+.git
+
+# Docker
+Dockerfile
+
+# Logs
+*.log

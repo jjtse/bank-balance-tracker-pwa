@@ -1,0 +1,17 @@
+# Version Control
+.git/
+.gitignore
+
+# Dependencies (Cloud Build will install these)
+node_modules/
+
+# Build Output
+.next/
+out/
+coverage/
+
+# Environment Variables
+.env.local
+
+# Whitelist (Allow) production env
+!.env.production
