@@ -96,12 +96,28 @@ export default function Dashboard() {
         const currentTotal = calculateLatestTotalTWD();
         setTotalTWD(currentTotal);
 
-        // Calculate diff (still based on chart data which is month-to-month)
-        if (processedData.length >= 2) {
-          const last = processedData[processedData.length - 1].total || 0;
-          const prev = processedData[processedData.length - 2].total || 0;
-          setLastMonthDiff(last - prev);
-        }
+        // Calculate diff: Sum of (Latest - Previous) for each account
+        // This logic ensures we compare the actual latest updates, not calendar months (which might be empty)
+        const calculateTotalDiff = () => {
+          return loadedAccounts.reduce((sumDiff, acc) => {
+            const accountRecords = loadedRecords
+              .filter(r => r.accountId === acc.id)
+              .sort((a, b) => b.date.localeCompare(a.date));
+            
+            const latest = accountRecords[0];
+            const previous = accountRecords[1];
+            
+            if (latest && previous) {
+              const latestVal = getTWDValue(latest, acc.currency);
+              const prevVal = getTWDValue(previous, acc.currency);
+              const v1 = isNaN(latestVal) ? 0 : latestVal;
+              const v2 = isNaN(prevVal) ? 0 : prevVal;
+              return sumDiff + (v1 - v2);
+            }
+            return sumDiff;
+          }, 0);
+        };
+        setLastMonthDiff(calculateTotalDiff());
       } catch (error) {
         console.error("Failed to load data:", error);
       } finally {
@@ -201,7 +217,7 @@ export default function Dashboard() {
           </h3>
         </div>
         
-        <div className="h-64 w-full">
+        <div className="h-64 w-full [&_.recharts-legend-wrapper]:!hidden">
           <Chart 
             chartData={chartData} 
             accounts={accounts} 
