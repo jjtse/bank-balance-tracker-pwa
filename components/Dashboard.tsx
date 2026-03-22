@@ -6,8 +6,9 @@ import { format, subMonths, parseISO } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 import { getAccounts, getRecords } from '@/lib/store';
 import { BankAccount, BalanceRecord, MonthlyData } from '@/lib/types';
-import { TrendingUp, Wallet, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { TrendingUp, Wallet, ArrowUpRight, ArrowDownRight, History } from 'lucide-react';
 import AccountDetailModal from './AccountDetailModal';
+import TotalHistoryModal from './TotalHistoryModal';
 
 import { useAuth } from '@/context/AuthContext';
 import { LogIn, Loader2, AlertTriangle, Settings as SettingsIcon } from 'lucide-react';
@@ -26,6 +27,7 @@ export default function Dashboard() {
   const [totalTWD, setTotalTWD] = useState(0);
   const [lastMonthDiff, setLastMonthDiff] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState<BankAccount | null>(null);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [dataLoading, setDataLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
@@ -180,13 +182,23 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Summary Card */}
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+      <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 group">
         <div className="flex items-center justify-between mb-4">
           <div className="p-2 bg-indigo-50 rounded-xl">
             <Wallet className="w-6 h-6 text-indigo-600" />
           </div>
-          <div className="flex flex-col items-end">
+          <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">總資產 (折合台幣)</span>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsHistoryOpen(true);
+              }}
+              className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all active:scale-90"
+              title="查看歷史紀錄"
+            >
+              <History className="w-4 h-4" />
+            </button>
           </div>
         </div>
         
@@ -295,6 +307,13 @@ export default function Dashboard() {
           onUpdate={handleDataUpdate}
         />
       )}
+
+      <TotalHistoryModal 
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        accounts={accounts}
+        records={records}
+      />
     </div>
   );
 }
